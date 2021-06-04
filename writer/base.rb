@@ -20,7 +20,7 @@ class WriterBase
   end
 
   def generate_filepath
-    Time.now.utc.strftime(ENV.fetch('STRFTIME', '%Y%m/%d/%H/%M%S.:thread_id.log').gsub(":thread_id", Thread.current.object_id.to_s))
+    Time.now.utc.strftime(ENV.fetch('STRFTIME', '%Y%m/%d/%H/%M%S.:thread_id.log.gzip').gsub(":thread_id", Thread.current.object_id.to_s))
   end
 
   def stream_to(filepath)
