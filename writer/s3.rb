@@ -1,4 +1,4 @@
-require 'aws'
+require "aws-sdk-s3"
 require 'logger'
 require_relative './base.rb'
 
