@@ -4,7 +4,7 @@ require_relative './base.rb'
 
 class Writer < WriterBase
 
-  S3_CLIENT = AWS::S3::Client.new({
+  S3_CLIENT = Aws::S3::Client.new({
     access_key_id: ENV.fetch('S3_KEY'),
     secret_access_key: ENV.fetch('S3_SECRET'),
   })
