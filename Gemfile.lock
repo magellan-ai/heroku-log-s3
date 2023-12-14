@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:boof/heroku-log-parser.git
+  remote: https://github.com/boof/heroku-log-parser.git
   revision: 526feaba6d8fa3d56fdb7cb92c759a65c9b74caf
   specs:
     heroku-log-parser (0.4.0)
