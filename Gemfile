@@ -15,3 +15,8 @@ gem 'newrelic_rpm'
 group :development, :test do
   gem 'rubocop'
 end
+
+group :test do
+  gem 'rack-test'
+  gem 'rspec'
+end
