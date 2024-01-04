@@ -13,7 +13,7 @@ Setup the following `ENV` (aka `heroku config:set`)
 - `STRFTIME` (default `%Y%m/%d/%H/%M%S.:thread_id.log`) format of your s3 `object_id`
   - `:thread_id` will be replaced by a unique number to prevent overwriting of the same file between reboots, in case the timestamp overlaps
 - `HTTP_USER`, `HTTP_PASSWORD` (default no password protection) credentials for HTTP Basic Authentication
-- `WRITER_LIB` (default `./writer/s3.rb`) defines the ruby script to load `Writer` class
+- `WRITER_LIB`: will use the `Writer::Local` library if this string contains the string `local`, otherwise uses `Writer::S3`.
 
 ## Using
 
