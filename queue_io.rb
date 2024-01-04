@@ -14,11 +14,11 @@ class QueueIO
     @queue.push(data)
   end
 
-  def read(_bytes)
+  def read(_bytes = nil)
     return if @closed
 
-    @pending.pop(true) # non-blocking, best effort
-  rescue Exception
+    @pending.pop(true)
+  rescue ThreadError
     @pending.push @queue.shift
     now = Time.now.to_i
     return @pending.shift unless (@start + @duration) < now
@@ -32,10 +32,7 @@ class QueueIO
   end
 
   def close
-    # make `closed?` return true
     @closed = true
-
-    # short circuit `:read`
     @duration = 0
     @queue.push ''
     @queue.push ''
