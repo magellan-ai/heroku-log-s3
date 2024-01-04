@@ -2,23 +2,29 @@
 
 require 'aws-sdk-s3'
 require 'logger'
+require 'tempfile'
+
 require_relative 'base'
 
-class Writer < WriterBase
-  def initialize
-    super
-    @s3_client = Aws::S3::Client.new(access_key_id:     ENV.fetch('S3_KEY'),
-                                     secret_access_key: ENV.fetch('S3_SECRET'))
-    @region = ENV.fetch('S3_REGION')
-    @bucket = ENV.fetch('S3_BUCKET')
-  end
+module Writer
+  class S3 < Base
+    def initialize
+      @bucket = Aws::S3::Resource.new(region: ENV.fetch('AWS_REGION'))
+                                 .bucket(ENV.fetch('S3_BUCKET'))
 
-  def stream_to(filepath)
-    @logger.info "begin #{filepath}"
-    @s3_client.put_object(region: @region,
-                          bucket: @bucket,
-                          key:    filepath,
-                          body:   @io)
-    @logger.info "end #{filepath}"
+      super
+    end
+
+    def stream_to(filepath)
+      @logger.info "begin #{filepath}"
+      Tempfile.create(filepath) do |tempfile|
+        while (data = @io.read)
+          tempfile.write(data)
+        end
+        tempfile.rewind
+        @bucket.object(filepath).upload_file(tempfile)
+      end
+      @logger.info "end #{filepath}"
+    end
   end
 end
