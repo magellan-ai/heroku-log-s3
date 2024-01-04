@@ -4,7 +4,7 @@ require 'English'
 require 'logger'
 require 'heroku-log-parser'
 require_relative 'queue_io'
-require_relative ENV.fetch('WRITER_LIB', './writer/s3.rb') # provider of `Writer < WriterBase` singleton
+require_relative ENV.fetch('WRITER_LIB', 'writer/s3') # provider of `Writer < WriterBase` singleton
 
 class App
   PREFIX = ENV.fetch('FILTER_PREFIX', '')
