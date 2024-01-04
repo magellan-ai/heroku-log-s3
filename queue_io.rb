@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 class QueueIO
@@ -12,19 +14,17 @@ class QueueIO
     @queue.push(data)
   end
 
-  def read(bytes)
+  def read(_bytes)
     return if @closed
-    @pending.pop(true) # non-blocking, best effort
 
+    @pending.pop(true) # non-blocking, best effort
   rescue Exception
     @pending.push @queue.shift
     now = Time.now.to_i
-    if (@start + @duration) < now
-      @start = now
-      return # make `eof?` return true
-    else
-      return @pending.shift
-    end
+    return @pending.shift unless (@start + @duration) < now
+
+    @start = now
+    nil # make `eof?` return true
   end
 
   def eof?
@@ -37,8 +37,8 @@ class QueueIO
 
     # short circuit `:read`
     @duration = 0
-    @queue.push ""
-    @queue.push ""
+    @queue.push ''
+    @queue.push ''
   end
 
   def closed?
