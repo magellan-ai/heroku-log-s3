@@ -4,19 +4,18 @@ RSpec.describe App do
   let(:app) { described_class.new }
   let(:env) do
     {
-      'AWS_REGION'            => 'us-east-1',
-      'AWS_ACCESS_KEY_ID'     => 'my_aws_key',
-      'AWS_SECRET_ACCESS_KEY' => 'my_aws_secret',
-      'DURATION'              => 1,
-      'S3_BUCKET'             => 'bucket_name'
+      'DURATION'   => 1,
+      'WRITER_LIB' => 'local'
     }
   end
 
   before do
     original_env = ENV.to_h
     stub_const('ENV', original_env.merge(env))
+  end
 
-    allow(Writer::S3).to receive(:instance).and_return(spy(Writer::S3))
+  after do
+    FileUtils.rm_rf('output')
   end
 
   describe 'GET /' do
