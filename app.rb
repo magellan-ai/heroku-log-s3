@@ -1,22 +1,33 @@
 # frozen_string_literal: true
 
 require 'English'
+
 require 'logger'
 require 'heroku-log-parser'
-require_relative ENV.fetch('WRITER_LIB', 'writer/s3')
+
+require_relative 'writer/local'
+require_relative 'writer/s3'
 
 class App
-  PREFIX          = ENV.fetch('FILTER_PREFIX', '')
-  PREFIX_LENGTH   = PREFIX.length
+  PREFIX = ENV.fetch('FILTER_PREFIX', '')
+  PREFIX_LENGTH = PREFIX.length
   LOG_REQUEST_URI = ENV.fetch('LOG_REQUEST_URI', nil)
 
   def initialize
-    @logger           = Logger.new($stdout)
+    @logger = Logger.new($stdout)
     @logger.formatter =
       proc do |_severity, _datetime, _progname, msg|
         "[app #{$PROCESS_ID} #{Thread.current.object_id}] #{msg}\n"
       end
     @logger.info 'initialized'
+
+    writer_class =
+      if ENV.fetch('WRITER_LIB', '').include?('local')
+        Writer::Local
+      else
+        Writer::S3
+      end
+    @writer = writer_class.instance
   end
 
   def call(env)
@@ -24,7 +35,7 @@ class App
       msg = line[:msg]
       next unless msg.start_with?(PREFIX)
 
-      Writer.instance.write "#{line[:ts]} #{msg[PREFIX_LENGTH..]}".strip
+      @writer.write "#{line[:ts]} #{msg[PREFIX_LENGTH..]}".strip
     end
   rescue Exception
     @logger.error $ERROR_INFO
