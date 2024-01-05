@@ -20,7 +20,7 @@ RSpec.describe App do
 
   describe 'GET /' do
     it 'works' do
-      get '/'
+      post '/'
       expect(last_response.status).to eq(200)
     end
   end
